@@ -3,18 +3,15 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow 
 
-# Load the pre-trained model from pickle file (ensure you have 'NDVI_Predictor.pkl' in the correct location)
-model_file = 'ndvi_model.h5'
-
-with open(model_file, 'rb') as f:
-    model = h5.load(f)
+# Load the pre-trained model from .h5 file (ensure you have 'NDVI_Predictor.h5' in the correct location)
+model_file = 'NDVI_Predictor.h5'
+model = load_model(model_file)
 
 # Streamlit application layout
-st.title("NDVI Predictor App (Pickle Model)")
+st.title("NDVI Predictor App (H5 Model)")
 st.write("This app uses a pre-trained model to predict NDVI values from input data.")
 
 # Text input box for user to input data
@@ -37,7 +34,7 @@ if input_text:
         # Predict using the model (assuming it is compatible with the processed input)
         prediction = model.predict(data_scaled)
 
-        # Display the prediction results
+        # Display the prediction result
         st.subheader("Prediction")
         st.write(f"Predicted NDVI Value: {prediction[0]}")
 
