@@ -7,7 +7,7 @@ import pickle
 from sklearn.preprocessing import MinMaxScaler
 
 # Load the pre-trained model from pickle file (ensure you have 'NDVI_Predictor.pkl' in the correct location)
-model_file = 'NDVI_Predictor.pkl'
+model_file = 'ndvi_model.pkl'
 
 with open(model_file, 'rb') as f:
     model = pickle.load(f)
