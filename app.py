@@ -58,9 +58,16 @@ st.write(prediction_proba)
 st.subheader("Model Accuracy")
 st.write(f"{accuracy * 100:.2f}%")
 
-st.subheader("Modified Max")
-st.write(prediction_proba))
-st.write(max(prediction_proba)*3)
-st.write(avg(prediction_proba))
-st.write(median(prediction_proba)*3)
+st.subheader("Statistics of Input Features")
 
+# Calculate the mean, median, mode, and variance for the input features
+mean_values = df.mean()
+median_values = df.median()
+mode_values = df.mode().iloc[0]
+variance_values = df.var()
+
+# Display the calculated statistics
+st.write(f"Mean of Input Features: {mean_values}")
+st.write(f"Median of Input Features: {median_values}")
+st.write(f"Mode of Input Features: {mode_values}")
+st.write(f"Variance of Input Features: {variance_values}")
