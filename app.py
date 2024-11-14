@@ -2,8 +2,6 @@
 
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -12,9 +10,7 @@ from sklearn.metrics import accuracy_score
 # Load the iris dataset
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = pd.Series(iris.target, name="species")
-data = X.copy()
-data["species"] = y
+y = pd.Series(iris.target)
 
 # Split into train and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -30,35 +26,7 @@ accuracy = accuracy_score(y_test, y_pred)
 # Streamlit application layout
 st.title("Iris Dataset Classification App")
 st.write("This app uses a Random Forest Classifier to predict the species of iris flowers.")
-st.write("### Exploratory Data Analysis (EDA)")
 
-# Exploratory Data Analysis Section
-st.subheader("Dataset Overview")
-st.write("Below is a quick look at the dataset used for training the model.")
-st.write(X_train.head())
-
-st.subheader("Class Distribution")
-fig, ax = plt.subplots()
-sns.countplot(x=y_train, ax=ax)
-ax.set_xticklabels(iris.target_names)
-ax.set_title("Class Distribution of Training Data")
-st.pyplot(fig)
-
-st.subheader("Feature Distribution")
-# Histogram for each feature
-for col in X.columns:
-    fig, ax = plt.subplots()
-    sns.histplot(X_train[col], kde=True, bins=10, ax=ax)
-    ax.set_title(f"Distribution of {col}")
-    st.pyplot(fig)
-
-st.subheader("Feature Relationships")
-# Pairplot for feature relationships
-st.write("Pairplot of feature relationships in the training set.")
-fig = sns.pairplot(data, hue="species", palette="viridis", markers=["o", "s", "D"])
-st.pyplot(fig)
-
-st.write("### Classification Section")
 # User input for prediction
 st.sidebar.header("Input Features")
 def user_input_features():
