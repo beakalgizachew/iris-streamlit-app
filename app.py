@@ -53,4 +53,4 @@ petal_width = st.slider("Petal width", float(df["petal_width"].min()), float(df[
 
 if st.button("Predict"):
     prediction = clf.predict([[sepal_length, sepal_width, petal_length, petal_width]])
-    st.write(f"The predicted species is: {prediction[0]
+    st.write(f"The predicted species is: {prediction[0]}
