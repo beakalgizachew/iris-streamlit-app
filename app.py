@@ -1,56 +1,59 @@
 # app.py
+
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-# Load the Iris dataset
-st.title("Iris Dataset Classifier")
-st.write("This is a simple Streamlit app that classifies Iris flower species.")
+# Load the iris dataset
+iris = datasets.load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = pd.Series(iris.target)
 
-@st.cache_data
-def load_data():
-    return sns.load_dataset("iris")
+# Split into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-df = load_data()
-
-# Display the dataset
-if st.checkbox("Show dataset"):
-    st.write(df)
-
-# Data visualization
-st.subheader("Data Visualization")
-feature = st.selectbox("Select feature to visualize", df.columns[:-1])
-fig, ax = plt.subplots()
-sns.histplot(df[feature], kde=True, ax=ax)
-st.pyplot(fig)
-
-# Train a model
-st.subheader("Train a Model")
-test_size = st.slider("Test set size", 0.1, 0.9, 0.3)
-
-X = df.drop("species", axis=1)
-y = df["species"]
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-clf = RandomForestClassifier(n_estimators=100)
+# Train a classifier
+clf = RandomForestClassifier()
 clf.fit(X_train, y_train)
 
-# Model evaluation
+# Predict on the test set
 y_pred = clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
-st.write(f"Model accuracy: {accuracy * 100:.2f}%")
 
-# Predict species
-st.subheader("Make Predictions")
-sepal_length = st.slider("Sepal length", float(df["sepal_length"].min()), float(df["sepal_length"].max()))
-sepal_width = st.slider("Sepal width", float(df["sepal_width"].min()), float(df["sepal_width"].max()))
-petal_length = st.slider("Petal length", float(df["petal_length"].min()), float(df["petal_length"].max()))
-petal_width = st.slider("Petal width", float(df["petal_width"].min()), float(df["petal_width"].max()))
+# Streamlit application layout
+st.title("Iris Dataset Classification App")
+st.write("This app uses a Random Forest Classifier to predict the species of iris flowers.")
 
-if st.button("Predict"):
-    prediction = clf.predict([[sepal_length, sepal_width, petal_length, petal_width]])
-    st.write(f"The predicted species is: {prediction[0]})
+# User input for prediction
+st.sidebar.header("Input Features")
+def user_input_features():
+    sepal_length = st.sidebar.slider("Sepal length", float(X["sepal length (cm)"].min()), float(X["sepal length (cm)"].max()))
+    sepal_width = st.sidebar.slider("Sepal width", float(X["sepal width (cm)"].min()), float(X["sepal width (cm)"].max()))
+    petal_length = st.sidebar.slider("Petal length", float(X["petal length (cm)"].min()), float(X["petal length (cm)"].max()))
+    petal_width = st.sidebar.slider("Petal width", float(X["petal width (cm)"].min()), float(X["petal width (cm)"].max()))
+    data = {"sepal length (cm)": sepal_length, "sepal width (cm)": sepal_width, 
+            "petal length (cm)": petal_length, "petal width (cm)": petal_width}
+    return pd.DataFrame(data, index=[0])
+
+df = user_input_features()
+
+# Display user input
+st.subheader("User Input features")
+st.write(df)
+
+# Prediction
+prediction = clf.predict(df)
+prediction_proba = clf.predict_proba(df)
+
+# Display prediction
+st.subheader("Prediction")
+st.write(iris.target_names[prediction][0])
+
+st.subheader("Prediction Probability")
+st.write(prediction_proba)
+
+st.subheader("Model Accuracy")
+st.write(f"{accuracy * 100:.2f}%")
