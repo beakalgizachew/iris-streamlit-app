@@ -5,12 +5,13 @@ import pandas as pd
 import numpy as np
 import pickle
 from sklearn.preprocessing import MinMaxScaler
+import tensorflow 
 
 # Load the pre-trained model from pickle file (ensure you have 'NDVI_Predictor.pkl' in the correct location)
-model_file = 'ndvi_model.pkl'
+model_file = 'ndvi_model.h5'
 
 with open(model_file, 'rb') as f:
-    model = pickle.load(f)
+    model = h5.load(f)
 
 # Streamlit application layout
 st.title("NDVI Predictor App (Pickle Model)")
