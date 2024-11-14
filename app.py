@@ -2,72 +2,45 @@
 
 import streamlit as st
 import pandas as pd
-from sklearn import datasets
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+import numpy as np
+import pickle
+from sklearn.preprocessing import MinMaxScaler
 
-# Load the iris dataset
-iris = datasets.load_iris()
-X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = pd.Series(iris.target)
+# Load the pre-trained model from pickle file (ensure you have 'NDVI_Predictor.pkl' in the correct location)
+model_file = 'NDVI_Predictor.pkl'
 
-# Split into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Train a classifier
-clf = RandomForestClassifier()
-clf.fit(X_train, y_train)
-
-# Predict on the test set
-y_pred = clf.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
+with open(model_file, 'rb') as f:
+    model = pickle.load(f)
 
 # Streamlit application layout
-st.title("Iris Dataset Classification App")
-st.write("This app uses a Random Forest Classifier to predict the species of iris flowers.")
+st.title("NDVI Predictor App (Pickle Model)")
+st.write("This app uses a pre-trained model to predict NDVI values from input data.")
 
-# User input for prediction
-st.sidebar.header("Input Features")
-def user_input_features():
-    sepal_length = st.sidebar.slider("Sepal length", float(X["sepal length (cm)"].min()), float(X["sepal length (cm)"].max()))
-    sepal_width = st.sidebar.slider("Sepal width", float(X["sepal width (cm)"].min()), float(X["sepal width (cm)"].max()))
-    petal_length = st.sidebar.slider("Petal length", float(X["petal length (cm)"].min()), float(X["petal length (cm)"].max()))
-    petal_width = st.sidebar.slider("Petal width", float(X["petal width (cm)"].min()), float(X["petal width (cm)"].max()))
-    data = {"sepal length (cm)": sepal_length, "sepal width (cm)": sepal_width, 
-            "petal length (cm)": petal_length, "petal width (cm)": petal_width}
-    return pd.DataFrame(data, index=[0])
+# Text input box for user to input data
+input_text = st.text_area("Enter your data (comma-separated values)")
 
-df = user_input_features()
+# Process the input if available
+if input_text:
+    try:
+        # Parse the comma-separated input into a DataFrame
+        data = pd.DataFrame([list(map(float, input_text.split(',')))], columns=["feature1", "feature2", "feature3", "feature4"])
 
-# Display user input
-st.subheader("User Input features")
-st.write(df)
+        # Display the input data for the user
+        st.subheader("Processed Input Data")
+        st.write(data)
 
-# Prediction
-prediction = clf.predict(df)
-prediction_proba = clf.predict_proba(df)
+        # Normalize the input data (using MinMaxScaler as an example)
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        data_scaled = scaler.fit_transform(data)
 
-# Display prediction
-st.subheader("Prediction")
-st.write(iris.target_names[prediction][0])
+        # Predict using the model (assuming it is compatible with the processed input)
+        prediction = model.predict(data_scaled)
 
-st.subheader("Prediction Probability")
-st.write(prediction_proba)
+        # Display the prediction results
+        st.subheader("Prediction")
+        st.write(f"Predicted NDVI Value: {prediction[0]}")
 
-st.subheader("Model Accuracy")
-st.write(f"{accuracy * 100:.2f}%")
-
-st.subheader("Statistics of Input Features")
-
-# Calculate the mean, median, mode, and variance for the input features
-mean_values = df.mean()
-median_values = df.median()
-mode_values = df.mode().iloc[0]
-variance_values = df.var()
-
-# Display the calculated statistics
-st.write(f"Mean of Input Features: {mean_values}")
-st.write(f"Median of Input Features: {median_values}")
-st.write(f"Mode of Input Features: {mode_values}")
-st.write(f"Variance of Input Features: {variance_values}")
+    except Exception as e:
+        st.error(f"Error processing the input: {e}")
+else:
+    st.write("Please enter your data in the text box above.")
