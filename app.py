@@ -57,3 +57,7 @@ st.write(prediction_proba)
 
 st.subheader("Model Accuracy")
 st.write(f"{accuracy * 100:.2f}%")
+
+st.subheader("Modified")
+st.write(prediction_proba*3)
+
