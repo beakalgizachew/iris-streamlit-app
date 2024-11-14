@@ -58,6 +58,9 @@ st.write(prediction_proba)
 st.subheader("Model Accuracy")
 st.write(f"{accuracy * 100:.2f}%")
 
-st.subheader("Modified")
-st.write(prediction_proba*3)
+st.subheader("Modified Max")
+st.write(prediction_proba))
+st.write(max(prediction_proba)*3)
+st.write(avg(prediction_proba))
+st.write(median(prediction_proba)*3)
 
